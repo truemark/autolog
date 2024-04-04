@@ -3,6 +3,7 @@ import {Construct} from 'constructs';
 import * as path from 'path';
 import {Duration} from 'aws-cdk-lib';
 import {Architecture} from 'aws-cdk-lib/aws-lambda';
+import {Effect, PolicyStatement} from 'aws-cdk-lib/aws-iam';
 
 export class MainFunction extends ExtendedNodejsFunction {
   constructor(scope: Construct, id: string) {
@@ -23,5 +24,12 @@ export class MainFunction extends ExtendedNodejsFunction {
       },
       memorySize: 768,
     });
+    this.addToRolePolicy(
+      new PolicyStatement({
+        actions: ['logs:ListTagsForResource'],
+        resources: ['*'],
+        effect: Effect.ALLOW,
+      })
+    );
   }
 }
