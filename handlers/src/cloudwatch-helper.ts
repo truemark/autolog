@@ -58,9 +58,9 @@ export async function getSubscriptionFilter(
     filterNamePrefix: 'AutoLog',
   });
   const response = await client.send(command);
-  const filter = response.subscriptionFilters?.forEach(
+  const filter = (response.subscriptionFilters ?? []).find(
     filter => filter.filterName === props.filterName
-  ) as SubscriptionFilter | undefined;
+  );
   if (filter) {
     log
       .trace()
