@@ -3,10 +3,16 @@ import {Construct} from 'constructs';
 import * as path from 'path';
 import {Duration} from 'aws-cdk-lib';
 import {Architecture} from 'aws-cdk-lib/aws-lambda';
-import {Effect, PolicyStatement} from 'aws-cdk-lib/aws-iam';
+import {Effect, PolicyStatement, Role} from 'aws-cdk-lib/aws-iam';
+
+export interface MainFunctionProps {
+  readonly deliveryStreamRole: Role;
+  readonly subscriptionFilterRole: Role;
+  // readonly failedLogsBucket: Bucket;
+}
 
 export class MainFunction extends ExtendedNodejsFunction {
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: MainFunctionProps) {
     super(scope, id, {
       entry: path.join(
         __dirname,
@@ -23,10 +29,27 @@ export class MainFunction extends ExtendedNodejsFunction {
         createDeployment: false,
       },
       memorySize: 768,
+      environment: {
+        DELIVERY_STREAM_ROLE_ARN: props.deliveryStreamRole.roleArn,
+        SUBSCRIPTION_FILTER_ROLE_ARN: props.subscriptionFilterRole.roleArn,
+        // FIREHOSE_ARN:
+        //   'arn:aws:firehose:us-west-2:381492266277:deliverystream/test',
+        // FIREHOSE_ROLE_ARN: props.firehoseRole.roleArn,
+        // FAILED_LOGS_BUCKET_ARN: props.failedLogsBucket.bucketArn,
+      },
     });
     this.addToRolePolicy(
       new PolicyStatement({
-        actions: ['logs:ListTagsForResource'],
+        actions: [
+          'logs:ListTagsForResource',
+          'logs:PutSubscriptionFilter',
+          'logs:DeleteSubscriptionFilter',
+          'logs:DescribeSubscriptionFilters',
+          'iam:PassRole',
+          'firehose:CreateDeliveryStream',
+          'firehose:DeleteDeliveryStream',
+          'firehose:DescribeDeliveryStream',
+        ],
         resources: ['*'],
         effect: Effect.ALLOW,
       })

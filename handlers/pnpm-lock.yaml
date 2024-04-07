@@ -15,8 +15,8 @@ dependencies:
     specifier: ^3.535.0
     version: 3.535.0
   '@nr1e/logging':
-    specifier: ^0.0.5
-    version: 0.0.5(pino@8.19.0)
+    specifier: ^0.0.7
+    version: 0.0.7(pino@8.19.0)
 
 devDependencies:
   '@jest/globals':
@@ -1277,8 +1277,8 @@ packages:
       fastq: 1.17.1
     dev: true
 
-  /@nr1e/logging@0.0.5(pino@8.19.0):
-    resolution: {integrity: sha512-jKL/FvFkkiDn6T6nfFJ/+AHBjl43iehHcWviJB/Sj43i9wI7E4c3OShRr+Bwp6n1bOn3DD5R0Cb3OJlZiVHiHw==}
+  /@nr1e/logging@0.0.7(pino@8.19.0):
+    resolution: {integrity: sha512-c214GDae2F3h5IRb973e+lFCDo4PPLgHhMVw3qlMSXaJpUqh+mK6UCCG42ikwyIM2hEFzOAnA0axwPtrImr/bg==}
     peerDependencies:
       pino: ^8.17.2
     dependencies:
