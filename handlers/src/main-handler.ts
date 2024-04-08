@@ -70,6 +70,7 @@ interface HandleUpdateTagEventProps {
   logGroupName: string;
   tags: LogGroupTags;
   deliveryStreamRoleArn: string;
+  deliveryStreamLogGroupName: string;
   subscriptionFilterStreamRoleArn: string;
 }
 
@@ -81,6 +82,7 @@ async function handleUpdateTagEvent(props: HandleUpdateTagEventProps) {
       name,
       bucketArn: props.tags.destination,
       roleArn: props.deliveryStreamRoleArn,
+      logGroupName: props.deliveryStreamLogGroupName,
     });
   }
   details = await waitForDeliveryStreamActivation(name);
@@ -107,6 +109,10 @@ export async function handler(event: unknown): Promise<void> {
   if (subscriptionFilterStreamRoleArn === undefined) {
     throw new Error('SUBSCRIPTION_FILTER_ROLE_ARN is required');
   }
+  const deliveryStreamLogGroupName = process.env.DELIVERY_STREAM_LOG_GROUP_NAME;
+  if (deliveryStreamLogGroupName === undefined) {
+    throw new Error('DELIVERY_STREAM_LOG_GROUP_NAME is required');
+  }
 
   if (isTagEvent(event)) {
     log.trace().obj('event', event).msg('Received tag event');
@@ -121,6 +127,7 @@ export async function handler(event: unknown): Promise<void> {
             logGroupName,
             tags,
             deliveryStreamRoleArn,
+            deliveryStreamLogGroupName,
             subscriptionFilterStreamRoleArn,
           });
         }

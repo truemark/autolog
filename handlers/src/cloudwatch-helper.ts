@@ -92,7 +92,8 @@ export async function createOrUpdateSubscriptionFilter(
   const command = new PutSubscriptionFilterCommand({
     logGroupName: props.logGroupName,
     filterName: 'AutoLog',
-    filterPattern: '{$.all = *}',
+    filterPattern: '',
+    // filterPattern: '{$.all = *}',
     destinationArn: props.deliveryStreamArn,
     roleArn: props.roleArn,
     distribution: 'ByLogStream',

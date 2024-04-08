@@ -5,6 +5,7 @@ import {
   DescribeDeliveryStreamCommand,
   FirehoseClient,
 } from '@aws-sdk/client-firehose';
+import {getAccountId} from './sts-helper';
 
 const log = logging.getLogger('firehose-helper');
 const client = new FirehoseClient({});
@@ -70,6 +71,7 @@ export interface CreateDeliveryStreamProps {
   readonly name: string;
   readonly bucketArn: string;
   readonly roleArn: string;
+  readonly logGroupName: string;
 }
 
 export async function createDeliveryStream(
@@ -80,27 +82,51 @@ export async function createDeliveryStream(
     DeliveryStreamType: 'DirectPut',
     ExtendedS3DestinationConfiguration: {
       RoleARN: props.roleArn,
-      // RoleARN: process.env['DELIVERY_STREAM_ROLE_ARN'], // TODO parameter check and pass through props
       BucketARN: props.bucketArn,
-      // BucketARN: 'arn:aws:s3:::overwatch-overwatchlogsf7d351c6-z9rixknklgby', // TODO Parameter
-      // Prefix: "STRING_VALUE", // TODO Noodle
+      Prefix: `CloudWatch/${await getAccountId()}/${
+        process.env['AWS_REGION']
+      }/`,
       // ErrorOutputPrefix: "STRING_VALUE", // TODO Noodle
-      // BufferingHints: { // TODO Nooddle
-      //   SizeInMBs: 128,
-      //   IntervalInSeconds: 60,
-      // },
-      CompressionFormat: 'Snappy',
+      BufferingHints: {
+        SizeInMBs: 128,
+        IntervalInSeconds: 60,
+      },
+      CompressionFormat: 'GZIP',
       // EncryptionConfiguration: { // TODO Research
       //   NoEncryptionConfig: "NoEncryption",
       //   KMSEncryptionConfig: {
       //     AWSKMSKeyARN: "STRING_VALUE", // required
       //   },
       // },
-      // CloudWatchLoggingOptions: { // TODO Add
-      //   Enabled: true,
-      //   LogGroupName: "STRING_VALUE",
-      //   LogStreamName: "STRING_VALUE",
-      // },
+      CloudWatchLoggingOptions: {
+        // TODO Add
+        Enabled: true,
+        LogGroupName: props.logGroupName,
+        LogStreamName: props.name,
+      },
+      ProcessingConfiguration: {
+        Enabled: true,
+        Processors: [
+          {
+            Type: 'Decompression',
+            Parameters: [
+              {
+                ParameterName: 'NumberOfRetries',
+                ParameterValue: '3',
+              },
+            ],
+          },
+          {
+            Type: 'CloudWatchLogProcessing',
+            Parameters: [
+              {
+                ParameterName: 'DataMessageExtraction',
+                ParameterValue: 'True',
+              },
+            ],
+          },
+        ],
+      },
       // ProcessingConfiguration: { // ProcessingConfiguration // TODO Not sure we need this
       //   Enabled: true || false,
       //   Processors: [ // ProcessorList

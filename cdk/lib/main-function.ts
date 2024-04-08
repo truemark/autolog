@@ -7,6 +7,7 @@ import {Effect, PolicyStatement, Role} from 'aws-cdk-lib/aws-iam';
 
 export interface MainFunctionProps {
   readonly deliveryStreamRole: Role;
+  readonly deliveryStreamLogGroupName: string;
   readonly subscriptionFilterRole: Role;
   // readonly failedLogsBucket: Bucket;
 }
@@ -31,6 +32,7 @@ export class MainFunction extends ExtendedNodejsFunction {
       memorySize: 768,
       environment: {
         DELIVERY_STREAM_ROLE_ARN: props.deliveryStreamRole.roleArn,
+        DELIVERY_STREAM_LOG_GROUP_NAME: props.deliveryStreamLogGroupName,
         SUBSCRIPTION_FILTER_ROLE_ARN: props.subscriptionFilterRole.roleArn,
         // FIREHOSE_ARN:
         //   'arn:aws:firehose:us-west-2:381492266277:deliverystream/test',

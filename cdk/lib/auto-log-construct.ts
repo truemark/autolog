@@ -9,6 +9,8 @@ import {
   Role,
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
+import {LogGroup, RetentionDays} from 'aws-cdk-lib/aws-logs';
+import {RemovalPolicy} from 'aws-cdk-lib';
 
 export class AutoLogConstruct extends Construct {
   constructor(scope: Construct, id: string) {
@@ -24,6 +26,17 @@ export class AutoLogConstruct extends Construct {
         resources: ['*'],
       })
     );
+    deliveryStreamRole.addToPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: [
+          'logs:CreateLogGroup',
+          'logs:CreateLogStream',
+          'logs:PutLogEvents',
+        ],
+        resources: ['*'],
+      })
+    );
 
     const subscriptionFilterRole = new Role(this, 'SubscriptionFilterRole', {
       assumedBy: new ServicePrincipal('logs.amazonaws.com'),
@@ -36,11 +49,21 @@ export class AutoLogConstruct extends Construct {
       })
     );
 
+    const deliveryStreamLogGroup = new LogGroup(
+      this,
+      'DeliveryStreamLogGroup',
+      {
+        retention: RetentionDays.ONE_WEEK,
+        removalPolicy: RemovalPolicy.DESTROY,
+      }
+    );
+
     const mainFunction = new MainFunction(this, 'MainFunction', {
       deliveryStreamRole,
+      deliveryStreamLogGroupName: deliveryStreamLogGroup.logGroupName,
       subscriptionFilterRole,
     });
-    const deadLetterQueue = new StandardQueue(this, 'DeadLetterQueue');
+    const deadLetterQueue = new StandardQueue(this, 'DeadLetterQueue'); // TODO Add alerting around this
     const mainTarget = new LambdaFunction(mainFunction, {
       deadLetterQueue,
     });
