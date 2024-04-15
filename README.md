@@ -10,7 +10,7 @@
 
 The following destination patterns are supported
 
-| Destination                              | Description                                                                                                                                                      |
-|------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| overwatch://{{bucketName}}/{{indexName}} | Logs will be written to an s3 bucket managed by [overwatch](https://github.com/truemark/overwatch) using the path /autolog/{{indexName}}/{{account}}/{{region}}/ |
+| Destination                  | Description                                                                                                                                                      |
+|------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| {{bucketName}}/{{indexName}} | Logs will be written to an s3 bucket managed by [overwatch](https://github.com/truemark/overwatch) using the path /autolog/{{indexName}}/{{account}}/{{region}}/ |
 
