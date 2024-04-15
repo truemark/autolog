@@ -5,7 +5,6 @@ import {
   DescribeSubscriptionFiltersCommand,
   ListTagsForResourceCommand,
   PutSubscriptionFilterCommand,
-  SubscriptionFilter,
 } from '@aws-sdk/client-cloudwatch-logs';
 import * as arnp from '@aws-sdk/util-arn-parser';
 
@@ -17,7 +16,7 @@ export function parseLogGroupName(arn: string): string {
 }
 
 export interface LogGroupTags {
-  readonly destination: string;
+  readonly dest: string;
 }
 
 export async function getLogGroupTags(
@@ -29,9 +28,9 @@ export async function getLogGroupTags(
     })
   );
   if (response.tags !== undefined) {
-    if (response.tags['autolog:destination'] !== undefined) {
+    if (response.tags['autolog:dest'] !== undefined) {
       const tags: LogGroupTags = {
-        destination: response.tags['autolog:destination'],
+        dest: response.tags['autolog:dest'],
       };
       log.trace().unknown('tags', tags).str('arn', arn).msg('Retrieved tags');
       return tags;

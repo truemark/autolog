@@ -86,20 +86,12 @@ export async function createDeliveryStream(
       Prefix: `CloudWatch/${await getAccountId()}/${
         process.env['AWS_REGION']
       }/`,
-      // ErrorOutputPrefix: "STRING_VALUE", // TODO Noodle
       BufferingHints: {
         SizeInMBs: 128,
         IntervalInSeconds: 60,
       },
       CompressionFormat: 'GZIP',
-      // EncryptionConfiguration: { // TODO Research
-      //   NoEncryptionConfig: "NoEncryption",
-      //   KMSEncryptionConfig: {
-      //     AWSKMSKeyARN: "STRING_VALUE", // required
-      //   },
-      // },
       CloudWatchLoggingOptions: {
-        // TODO Add
         Enabled: true,
         LogGroupName: props.logGroupName,
         LogStreamName: props.name,
@@ -127,43 +119,7 @@ export async function createDeliveryStream(
           },
         ],
       },
-      // ProcessingConfiguration: { // ProcessingConfiguration // TODO Not sure we need this
-      //   Enabled: true || false,
-      //   Processors: [ // ProcessorList
-      //     { // Processor
-      //       Type: "RecordDeAggregation" || "Decompression" || "CloudWatchLogProcessing" || "Lambda" || "MetadataExtraction" || "AppendDelimiterToRecord", // required
-      //       Parameters: [ // ProcessorParameterList
-      //         { // ProcessorParameter
-      //           ParameterName: "LambdaArn" || "NumberOfRetries" || "MetadataExtractionQuery" || "JsonParsingEngine" || "RoleArn" || "BufferSizeInMBs" || "BufferIntervalInSeconds" || "SubRecordType" || "Delimiter" || "CompressionFormat" || "DataMessageExtraction", // required
-      //           ParameterValue: "STRING_VALUE", // required
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // },
-      S3BackupMode: 'Disabled', // TODO Find out what this is
-      // S3BackupConfiguration: {
-      //   RoleARN: "STRING_VALUE", // required
-      //   BucketARN: "STRING_VALUE", // required
-      //   Prefix: "STRING_VALUE",
-      //   ErrorOutputPrefix: "STRING_VALUE",
-      //   BufferingHints: {
-      //     SizeInMBs: Number("int"),
-      //     IntervalInSeconds: Number("int"),
-      //   },
-      //   CompressionFormat: "UNCOMPRESSED" || "GZIP" || "ZIP" || "Snappy" || "HADOOP_SNAPPY",
-      //   EncryptionConfiguration: {
-      //     NoEncryptionConfig: "NoEncryption",
-      //     KMSEncryptionConfig: {
-      //       AWSKMSKeyARN: "STRING_VALUE", // required
-      //     },
-      //   },
-      //   CloudWatchLoggingOptions: {
-      //     Enabled: true || false,
-      //     LogGroupName: "STRING_VALUE",
-      //     LogStreamName: "STRING_VALUE",
-      //   },
-      // },
+      S3BackupMode: 'Disabled',
     },
   });
   const response = await client.send(command);

@@ -75,12 +75,12 @@ interface HandleUpdateTagEventProps {
 }
 
 async function handleUpdateTagEvent(props: HandleUpdateTagEventProps) {
-  const name = `AutoLog-S3-${arnp.parse(props.tags.destination).resource}`;
+  const name = `AutoLog-S3-${arnp.parse(props.tags.dest).resource}`;
   let details = await getDeliveryStream(name);
   if (details === null) {
     await createDeliveryStream({
       name,
-      bucketArn: props.tags.destination,
+      bucketArn: `arn:aws:s3:::${props.tags.dest}`,
       roleArn: props.deliveryStreamRoleArn,
       logGroupName: props.deliveryStreamLogGroupName,
     });
