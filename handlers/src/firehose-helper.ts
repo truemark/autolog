@@ -69,7 +69,8 @@ export async function waitForDeliveryStreamActivation(
 
 export interface CreateDeliveryStreamProps {
   readonly name: string;
-  readonly bucketArn: string;
+  readonly bucketName: string;
+  readonly indexName: string;
   readonly roleArn: string;
   readonly logGroupName: string;
 }
@@ -82,8 +83,8 @@ export async function createDeliveryStream(
     DeliveryStreamType: 'DirectPut',
     ExtendedS3DestinationConfiguration: {
       RoleARN: props.roleArn,
-      BucketARN: props.bucketArn,
-      Prefix: `CloudWatch/${await getAccountId()}/${
+      BucketARN: `arn:aws:s3:::${props.bucketName}`,
+      Prefix: `autolog/${props.indexName}/${await getAccountId()}/${
         process.env['AWS_REGION']
       }/`,
       BufferingHints: {

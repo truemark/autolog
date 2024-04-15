@@ -75,12 +75,24 @@ interface HandleUpdateTagEventProps {
 }
 
 async function handleUpdateTagEvent(props: HandleUpdateTagEventProps) {
+  if (!props.tags.dest.startsWith('overwatch://')) {
+    log.error().str('dest', props.tags.dest).msg('Unknown destination');
+    return;
+  }
+  const parts = props.tags.dest.replace('overwatch://', '').split('/');
+  if (parts.length !== 2) {
+    log.error().str('dest', props.tags.dest).msg('Invalid destination');
+    return;
+  }
+  const bucketName = parts[0];
+  const indexName = parts[1];
   const name = `AutoLog-S3-${arnp.parse(props.tags.dest).resource}`;
   let details = await getDeliveryStream(name);
   if (details === null) {
     await createDeliveryStream({
       name,
-      bucketArn: `arn:aws:s3:::${props.tags.dest}`,
+      bucketName,
+      indexName,
       roleArn: props.deliveryStreamRoleArn,
       logGroupName: props.deliveryStreamLogGroupName,
     });
