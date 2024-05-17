@@ -12,7 +12,6 @@ import {
   getDeliveryStream,
   waitForDeliveryStreamActivation,
 } from './firehose-helper';
-import * as arnp from '@aws-sdk/util-arn-parser';
 
 const log = logging.getRootLogger();
 
