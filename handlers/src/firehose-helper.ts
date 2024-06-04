@@ -6,9 +6,14 @@ import {
   FirehoseClient,
 } from '@aws-sdk/client-firehose';
 import {getAccountId} from './sts-helper';
+import {
+  CloudWatchLogsClient,
+  CreateLogStreamCommand,
+} from '@aws-sdk/client-cloudwatch-logs';
 
 const log = logging.getLogger('firehose-helper');
 const client = new FirehoseClient({});
+const logClient = new CloudWatchLogsClient({});
 
 export interface DeliveryStreamDetails {
   readonly arn: string;
@@ -75,9 +80,20 @@ export interface CreateDeliveryStreamProps {
   readonly logGroupName: string;
 }
 
+async function createLogStream(logGroupName: string, logStreamName: string) {
+  const command = new CreateLogStreamCommand({
+    logGroupName: logGroupName,
+    logStreamName: logStreamName,
+  });
+  const response = await logClient.send(command);
+  log.trace().obj('response', response).msg('Created log stream');
+}
+
 export async function createDeliveryStream(
   props: CreateDeliveryStreamProps
 ): Promise<string> {
+  log.debug().obj('props', props).msg('Creating delivery stream');
+  await createLogStream(props.logGroupName, props.name);
   const command = new CreateDeliveryStreamCommand({
     DeliveryStreamName: props.name,
     DeliveryStreamType: 'DirectPut',

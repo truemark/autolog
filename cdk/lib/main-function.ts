@@ -47,6 +47,7 @@ export class MainFunction extends ExtendedNodejsFunction {
           'logs:PutSubscriptionFilter',
           'logs:DeleteSubscriptionFilter',
           'logs:DescribeSubscriptionFilters',
+          'logs:CreateLogStream',
           'iam:PassRole',
           'firehose:CreateDeliveryStream',
           'firehose:DeleteDeliveryStream',
