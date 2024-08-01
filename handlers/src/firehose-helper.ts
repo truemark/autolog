@@ -138,6 +138,16 @@ export async function createDeliveryStream(
       },
       S3BackupMode: 'Disabled',
     },
+    Tags: [
+      {
+        Key: 'automation:id',
+        Value: process.env['AUTOMATION_ID'] ?? '',
+      },
+      {
+        Key: 'automation:url',
+        Value: process.env['AUTOMATION_URL'] ?? '',
+      },
+    ],
   });
   const response = await client.send(command);
   log.trace().obj('response', response).msg('Created delivery stream');

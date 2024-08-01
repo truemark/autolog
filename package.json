@@ -1,6 +1,6 @@
 {
   "name": "autolog",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "scripts": {
     "install-handlers": "cd handlers && pnpm i --frozen-lockfile",
     "install-cdk": "cd cdk && pnpm i --frozen-lockfile",
@@ -9,12 +9,13 @@
     "build-handlers": "cd handlers && pnpm run build",
     "build-cdk": "cd cdk && pnpm run build",
     "build": "concurrently \"pnpm:build-handlers\" \"pnpm:build-cdk\" -c blue,green",
-    "makepretty-handlers": "cd handlers && pnpm run makepretty",
-    "makepretty-cdk": "cd cdk && pnpm run makepretty",
-    "makepretty": "concurrently \"pnpm:makepretty-handlers\" \"pnpm:makepretty-cdk\" -c blue,green",
+    "fmt-handlers": "cd handlers && pnpm run fmt",
+    "fmt-cdk": "cd cdk && pnpm run fmt",
+    "fmt": "concurrently \"pnpm:fmt-handlers\" \"pnpm:fmt-cdk\" -c blue,green",
     "watch-handlers": "cd handlers && pnpm run watch",
-    "watch-cdk": "cd cdk && cdk watch",
-    "deploy-cdk": "cd cdk && cdk deploy",
+    "cdk-watch": "cd cdk && cdk watch",
+    "cdk-deploy": "pnpm i --frozen-lockfile && pnpm build && cd cdk && cdk deploy",
+    "cdk-diff": "pnpm i --frozen-lockfile && pnpm build && cd cdk && cdk diff",
     "watch": "concurrently \"pnpm:watch-handlers\" \"pnpm:watch-cdk\" -c blue,green"
   },
   "devDependencies": {
