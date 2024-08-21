@@ -51,6 +51,7 @@ export class MainFunction extends ExtendedNodejsFunction {
           'firehose:CreateDeliveryStream',
           'firehose:DeleteDeliveryStream',
           'firehose:DescribeDeliveryStream',
+          'firehose:TagDeliveryStream',
         ],
         resources: ['*'],
         effect: Effect.ALLOW,
