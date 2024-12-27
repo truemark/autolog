@@ -5,12 +5,13 @@ import {Duration} from 'aws-cdk-lib';
 import {Architecture} from 'aws-cdk-lib/aws-lambda';
 import {Effect, PolicyStatement, Role} from 'aws-cdk-lib/aws-iam';
 import * as globals from './globals';
+import {LogLevel} from './globals';
 
 export interface MainFunctionProps {
   readonly deliveryStreamRole: Role;
   readonly deliveryStreamLogGroupName: string;
   readonly subscriptionFilterRole: Role;
-  // readonly failedLogsBucket: Bucket;
+  readonly logLevel: LogLevel;
 }
 
 export class MainFunction extends ExtendedNodejsFunction {
@@ -37,6 +38,7 @@ export class MainFunction extends ExtendedNodejsFunction {
         SUBSCRIPTION_FILTER_ROLE_ARN: props.subscriptionFilterRole.roleArn,
         AUTOMATION_NAME: globals.NAME,
         AUTOMATION_URL: globals.URL,
+        LOG_LEVEL: props.logLevel,
       },
     });
     this.addToRolePolicy(
