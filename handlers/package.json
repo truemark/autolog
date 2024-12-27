@@ -4,6 +4,7 @@
   "scripts": {
     "prebuild": "prettier --check . && gts lint",
     "build": "tsc",
+    "test": "jest",
     "watch": "tsc -w",
     "lint": "gts lint",
     "clean": "gts clean",
