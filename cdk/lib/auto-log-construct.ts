@@ -62,6 +62,7 @@ export class AutoLogConstruct extends Construct {
       deliveryStreamRole,
       deliveryStreamLogGroupName: deliveryStreamLogGroup.logGroupName,
       subscriptionFilterRole,
+      logLevel: 'warn',
     });
     const deadLetterQueue = new StandardQueue(this, 'DeadLetterQueue'); // TODO Add alerting around this
     const mainTarget = new LambdaFunction(mainFunction, {

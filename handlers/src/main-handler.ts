@@ -12,6 +12,7 @@ import {
   getDeliveryStream,
   waitForDeliveryStreamActivation,
 } from './firehose-helper';
+import {Level} from '@nr1e/logging';
 
 const log = logging.getRootLogger();
 
@@ -104,7 +105,7 @@ export async function handler(event: unknown): Promise<void> {
   await logging.initialize({
     svc: 'AutoLog',
     name: 'main-handler',
-    level: 'trace',
+    level: (process.env['LOG_LEVEL'] as Level) || 'warn',
   });
 
   const deliveryStreamRoleArn = process.env.DELIVERY_STREAM_ROLE_ARN;
