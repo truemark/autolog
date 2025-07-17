@@ -4,6 +4,7 @@ import {
   DeliveryStreamStatus,
   DescribeDeliveryStreamCommand,
   FirehoseClient,
+  ProcessorType,
 } from '@aws-sdk/client-firehose';
 import {getAccountId} from './sts-helper';
 import {
@@ -85,10 +86,20 @@ async function createLogStream(logGroupName: string, logStreamName: string) {
     logGroupName: logGroupName,
     logStreamName: logStreamName,
   });
-  const response = await logClient.send(command);
-  log.trace().obj('response', response).msg('Created log stream');
+  try {
+    const response = await logClient.send(command);
+    log.trace().obj('response', response).msg('Created log stream');
+  } catch (e) {
+    if ((e as Error).name === 'ResourceAlreadyExistsException') {
+      log
+        .trace()
+        .str('logStreamName', logStreamName)
+        .msg('Log stream already exists, skipping creation.');
+    } else {
+      throw e;
+    }
+  }
 }
-
 export async function createDeliveryStream(
   props: CreateDeliveryStreamProps
 ): Promise<string> {
@@ -117,7 +128,7 @@ export async function createDeliveryStream(
         Enabled: true,
         Processors: [
           {
-            Type: 'Decompression',
+            Type: ProcessorType.Decompression,
             Parameters: [
               {
                 ParameterName: 'NumberOfRetries',
@@ -126,11 +137,15 @@ export async function createDeliveryStream(
             ],
           },
           {
-            Type: 'CloudWatchLogProcessing',
+            Type: ProcessorType.Lambda,
             Parameters: [
               {
-                ParameterName: 'DataMessageExtraction',
-                ParameterValue: 'True',
+                ParameterName: 'LambdaArn',
+                ParameterValue: process.env['FIREHOSE_PROCESSOR_ARN'],
+              },
+              {
+                ParameterName: 'NumberOfRetries',
+                ParameterValue: '3',
               },
             ],
           },

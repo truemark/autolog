@@ -12,6 +12,7 @@ export interface MainFunctionProps {
   readonly deliveryStreamLogGroupName: string;
   readonly subscriptionFilterRole: Role;
   readonly logLevel: LogLevel;
+  readonly firehoseProcessorArn: string;
 }
 
 export class MainFunction extends ExtendedNodejsFunction {
@@ -39,6 +40,7 @@ export class MainFunction extends ExtendedNodejsFunction {
         AUTOMATION_NAME: globals.NAME,
         AUTOMATION_URL: globals.URL,
         LOG_LEVEL: props.logLevel,
+        FIREHOSE_PROCESSOR_ARN: props.firehoseProcessorArn,
       },
     });
     this.addToRolePolicy(
