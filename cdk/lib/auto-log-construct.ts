@@ -1,5 +1,6 @@
 import {Construct} from 'constructs';
 import {MainFunction} from './main-function';
+import {FirehoseProcessorFunction} from './firehose-processor-function';
 import {StandardQueue} from 'truemark-cdk-lib/aws-sqs';
 import {LambdaFunction} from 'aws-cdk-lib/aws-events-targets';
 import {Rule} from 'aws-cdk-lib/aws-events';
@@ -10,7 +11,7 @@ import {
   ServicePrincipal,
 } from 'aws-cdk-lib/aws-iam';
 import {LogGroup, RetentionDays} from 'aws-cdk-lib/aws-logs';
-import {RemovalPolicy} from 'aws-cdk-lib';
+import {RemovalPolicy, Stack} from 'aws-cdk-lib';
 
 export class AutoLogConstruct extends Construct {
   constructor(scope: Construct, id: string) {
@@ -37,6 +38,15 @@ export class AutoLogConstruct extends Construct {
         resources: ['*'],
       })
     );
+    deliveryStreamRole.addToPolicy(
+      new PolicyStatement({
+        effect: Effect.ALLOW,
+        actions: ['lambda:InvokeFunction'],
+        resources: [
+          `arn:aws:lambda:${Stack.of(this).region}:${Stack.of(this).account}:function:AutoLog-*`,
+        ],
+      })
+    );
 
     const subscriptionFilterRole = new Role(this, 'SubscriptionFilterRole', {
       assumedBy: new ServicePrincipal('logs.amazonaws.com'),
@@ -58,11 +68,23 @@ export class AutoLogConstruct extends Construct {
       }
     );
 
+    const firehoseProcessor = new FirehoseProcessorFunction(
+      this,
+      'FirehoseProcessor'
+    );
+
+    firehoseProcessor.addPermission('FirehoseInvoke', {
+      principal: new ServicePrincipal('firehose.amazonaws.com'),
+      action: 'lambda:InvokeFunction',
+      sourceArn: `arn:aws:firehose:${Stack.of(this).region}:${Stack.of(this).account}:deliverystream/AutoLog-*`,
+    });
+
     const mainFunction = new MainFunction(this, 'MainFunction', {
       deliveryStreamRole,
       deliveryStreamLogGroupName: deliveryStreamLogGroup.logGroupName,
       subscriptionFilterRole,
       logLevel: 'warn',
+      firehoseProcessorArn: firehoseProcessor.functionArn,
     });
     const deadLetterQueue = new StandardQueue(this, 'DeadLetterQueue'); // TODO Add alerting around this
     const mainTarget = new LambdaFunction(mainFunction, {
