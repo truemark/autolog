@@ -24,11 +24,12 @@ interface LogEvent {
 }
 
 export const handler = async (
-  event: FirehoseTransformationEvent
+  event: FirehoseTransformationEvent,
 ): Promise<FirehoseTransformationResult> => {
-  const output = event.records.map(record => {
+  const output = event.records.map((record) => {
     const payload = Buffer.from(record.data, 'base64').toString('utf8');
 
+    // TODO Don't use any
     let parsed: any; // Use any so we can check shape dynamically
     try {
       parsed = JSON.parse(payload);
@@ -59,7 +60,7 @@ export const handler = async (
 
       const logGroupArn = `arn:aws:logs:${event.region}:${cwParsed.owner}:log-group:${cwParsed.logGroup}`;
 
-      const enrichedLines = cwParsed.logEvents.map(logEvent => {
+      const enrichedLines = cwParsed.logEvents.map((logEvent) => {
         const cleanedMessage = logEvent.message.replace(/\0+$/, '');
 
         let messageParsed: LogEvent;
