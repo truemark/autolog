@@ -14,7 +14,7 @@ export class FirehoseProcessorFunction extends ExtendedNodejsFunction {
         '..',
         'handlers',
         'src',
-        'firehose-processor.ts',
+        'firehose-processor.mts',
       ),
       handler: 'handler',
       architecture: Architecture.ARM_64,

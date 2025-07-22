@@ -6,7 +6,7 @@ import {
   FirehoseClient,
   ProcessorType,
 } from '@aws-sdk/client-firehose';
-import {getAccountId} from './sts-helper';
+import {getAccountId} from './sts-helper.mjs';
 import {
   CloudWatchLogsClient,
   CreateLogStreamCommand,
@@ -22,13 +22,13 @@ export interface DeliveryStreamDetails {
 }
 
 export async function getDeliveryStream(
-  name: string
+  name: string,
 ): Promise<DeliveryStreamDetails | null> {
   try {
     const response = await client.send(
       new DescribeDeliveryStreamCommand({
         DeliveryStreamName: name,
-      })
+      }),
     );
     if (response.DeliveryStreamDescription !== undefined) {
       const details: DeliveryStreamDetails = {
@@ -51,7 +51,7 @@ export async function getDeliveryStream(
 }
 
 export async function waitForDeliveryStreamActivation(
-  name: string
+  name: string,
 ): Promise<DeliveryStreamDetails> {
   let attempts = 0;
   while (attempts < 60) {
@@ -64,11 +64,11 @@ export async function waitForDeliveryStreamActivation(
     }
     if (details.status !== 'CREATING') {
       throw new Error(
-        `Delivery stream cannot go active in status ${details.status}`
+        `Delivery stream cannot go active in status ${details.status}`,
       );
     }
     attempts++;
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 5000));
   }
   throw new Error('Delivery stream did not activate');
 }
@@ -101,7 +101,7 @@ async function createLogStream(logGroupName: string, logStreamName: string) {
   }
 }
 export async function createDeliveryStream(
-  props: CreateDeliveryStreamProps
+  props: CreateDeliveryStreamProps,
 ): Promise<string> {
   log.debug().obj('props', props).msg('Creating delivery stream');
   await createLogStream(props.logGroupName, props.name);
