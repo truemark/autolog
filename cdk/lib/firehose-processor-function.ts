@@ -14,7 +14,7 @@ export class FirehoseProcessorFunction extends ExtendedNodejsFunction {
         '..',
         'handlers',
         'src',
-        'firehose-processor.ts'
+        'firehose-processor.ts',
       ),
       handler: 'handler',
       architecture: Architecture.ARM_64,
@@ -37,7 +37,7 @@ export class FirehoseProcessorFunction extends ExtendedNodejsFunction {
         resources: [
           `arn:aws:logs:${Stack.of(this).region}:${Stack.of(this).account}:log-group:/aws/lambda/${id}*:*`,
         ],
-      })
+      }),
     );
   }
 }

@@ -25,7 +25,7 @@ export class AutoLogConstruct extends Construct {
         effect: Effect.ALLOW,
         actions: ['s3:PutObject'],
         resources: ['*'],
-      })
+      }),
     );
     deliveryStreamRole.addToPolicy(
       new PolicyStatement({
@@ -36,7 +36,7 @@ export class AutoLogConstruct extends Construct {
           'logs:PutLogEvents',
         ],
         resources: ['*'],
-      })
+      }),
     );
     deliveryStreamRole.addToPolicy(
       new PolicyStatement({
@@ -45,7 +45,7 @@ export class AutoLogConstruct extends Construct {
         resources: [
           `arn:aws:lambda:${Stack.of(this).region}:${Stack.of(this).account}:function:AutoLog-*`,
         ],
-      })
+      }),
     );
 
     const subscriptionFilterRole = new Role(this, 'SubscriptionFilterRole', {
@@ -56,7 +56,7 @@ export class AutoLogConstruct extends Construct {
         effect: Effect.ALLOW,
         actions: ['firehose:PutRecord'],
         resources: ['*'],
-      })
+      }),
     );
 
     const deliveryStreamLogGroup = new LogGroup(
@@ -65,12 +65,12 @@ export class AutoLogConstruct extends Construct {
       {
         retention: RetentionDays.ONE_WEEK,
         removalPolicy: RemovalPolicy.DESTROY,
-      }
+      },
     );
 
     const firehoseProcessor = new FirehoseProcessorFunction(
       this,
-      'FirehoseProcessor'
+      'FirehoseProcessor',
     );
 
     firehoseProcessor.addPermission('FirehoseInvoke', {
@@ -96,7 +96,7 @@ export class AutoLogConstruct extends Construct {
         source: ['aws.tag'],
         detailType: ['Tag Change on Resource'],
         detail: {
-          service: ['logs'],
+          'service': ['logs'],
           'resource-type': ['log-group'],
           'changed-tag-keys': ['autolog:dest'],
         },
