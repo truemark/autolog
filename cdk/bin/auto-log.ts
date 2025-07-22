@@ -17,9 +17,8 @@ const app = new ExtendedApp({
 if (!isSupportedRegion(app.region)) {
   console.error(`Region ${app.region} is not supported`);
   console.error(
-    `Supported regions are:\n  ${Object.keys(SupportedRegions).join('\n  ')}`
+    `Supported regions are:\n  ${Object.keys(SupportedRegions).join('\n  ')}`,
   );
-  // eslint-disable-next-line n/no-process-exit
   process.exit(1);
 }
 

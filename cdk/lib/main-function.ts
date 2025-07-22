@@ -24,7 +24,7 @@ export class MainFunction extends ExtendedNodejsFunction {
         '..',
         'handlers',
         'src',
-        'main-handler.ts'
+        'main-handler.ts',
       ),
       architecture: Architecture.ARM_64,
       handler: 'handler',
@@ -59,7 +59,7 @@ export class MainFunction extends ExtendedNodejsFunction {
         ],
         resources: ['*'],
         effect: Effect.ALLOW,
-      })
+      }),
     );
   }
 }
