@@ -15,7 +15,7 @@
     "@aws-sdk/client-sts": "^3.848.0",
     "@aws-sdk/util-arn-parser": "^3.804.0",
     "@nr1e/logging": "^0.0.8",
-    "@types/prettier": "^3.0.0",
+    "@types/prettier": "^3.0.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
