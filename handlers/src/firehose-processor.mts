@@ -27,9 +27,12 @@ export const handler = async (
   event: FirehoseTransformationEvent,
 ): Promise<FirehoseTransformationResult> => {
   const output = event.records.map((record) => {
-    const payload = Buffer.from(record.data, 'base64').toString('utf8');
+    const payload = Buffer.from(record.data, 'base64')
+      .toString('utf8')
+      .replace(/^\uFEFF/, '')
+      .replace(/\0+$/, '')
+      .trim();
 
-    // TODO Don't use any
     let parsed: any; // Use any so we can check shape dynamically
     try {
       parsed = JSON.parse(payload);
