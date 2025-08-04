@@ -17,6 +17,7 @@ export function parseLogGroupName(arn: string): string {
 
 export interface LogGroupTags {
   readonly dest: string;
+  readonly disabled?: string;
 }
 
 export async function getLogGroupTags(
@@ -28,6 +29,14 @@ export async function getLogGroupTags(
     }),
   );
   if (response.tags !== undefined) {
+    if (response.tags['autolog:disabled'] !== undefined) {
+      const tags: LogGroupTags = {
+        dest: response.tags['autolog:dest'] || '',
+        disabled: response.tags['autolog:disabled'],
+      };
+      log.trace().unknown('tags', tags).str('arn', arn).msg('Retrieved tags');
+      return tags;
+    }
     if (response.tags['autolog:dest'] !== undefined) {
       const tags: LogGroupTags = {
         dest: response.tags['autolog:dest'],

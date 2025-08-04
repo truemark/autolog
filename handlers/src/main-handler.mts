@@ -75,6 +75,20 @@ interface HandleUpdateTagEventProps {
 }
 
 async function handleUpdateTagEvent(props: HandleUpdateTagEventProps) {
+  // Check if the log group is explicitly disabled
+  const isDisabled = props.tags.disabled;
+
+  if (isDisabled?.toLowerCase() === 'true') {
+    await handleDeleteTagEvent(props.logGroupName);
+    log
+      .info()
+      .str('logGroup', props.logGroupName)
+      .msg(
+        "Skipping/Deleting subscription filter setup: 'autolog:disabled' is set to true",
+      );
+    return;
+  }
+
   const parts = props.tags.dest.split('/');
   if (parts.length !== 2) {
     log.error().str('dest', props.tags.dest).msg('Invalid destination');
