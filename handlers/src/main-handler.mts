@@ -82,7 +82,7 @@ async function handleUpdateTagEvent(props: HandleUpdateTagEventProps) {
 
   if (isDisabled?.toLowerCase() === 'true') {
     await handleDeleteTagEvent(props.logGroupName);
-    await untagResource(props.resourceArn, ['autolog:dest']);
+
     log
       .info()
       .str('arn', props.resourceArn)
