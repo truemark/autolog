@@ -86,7 +86,7 @@ async function handleUpdateTagEvent(props: HandleUpdateTagEventProps) {
     log
       .info()
       .str('arn', props.resourceArn)
-      .msg('Disabled tag set — removed autolog:dest tag to trigger deletion');
+      .msg('AutoLog subscription filter is removed');
     return;
   }
 
