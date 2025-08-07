@@ -98,7 +98,7 @@ export class AutoLogConstruct extends Construct {
         detail: {
           'service': ['logs'],
           'resource-type': ['log-group'],
-          'changed-tag-keys': ['autolog:dest'],
+          'changed-tag-keys': ['autolog:dest', 'autolog:disabled'],
         },
       },
       description: 'Routes tag events to AutoLog',

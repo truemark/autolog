@@ -26,6 +26,7 @@ AWS CDK deployed stack that allows you to manipulate and ship AWS CloudWatch log
 | Tag               | Description                             |
 |-------------------|-----------------------------------------|
 | autolog:dest      | The destination logs will be written to |
+| autolog:disabled      | If set to true, AutoLog will skip creating or delete existing logs subscription filter |
 
 The following destination patterns are supported
 

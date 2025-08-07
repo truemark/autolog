@@ -5,6 +5,7 @@ import {
   DescribeSubscriptionFiltersCommand,
   ListTagsForResourceCommand,
   PutSubscriptionFilterCommand,
+  UntagResourceCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
 import * as arnp from '@aws-sdk/util-arn-parser';
 
@@ -17,6 +18,7 @@ export function parseLogGroupName(arn: string): string {
 
 export interface LogGroupTags {
   readonly dest: string;
+  readonly disabled?: string;
 }
 
 export async function getLogGroupTags(
@@ -28,6 +30,14 @@ export async function getLogGroupTags(
     }),
   );
   if (response.tags !== undefined) {
+    if (response.tags['autolog:disabled'] !== undefined) {
+      const tags: LogGroupTags = {
+        dest: response.tags['autolog:dest'] || '',
+        disabled: response.tags['autolog:disabled'],
+      };
+      log.trace().unknown('tags', tags).str('arn', arn).msg('Retrieved tags');
+      return tags;
+    }
     if (response.tags['autolog:dest'] !== undefined) {
       const tags: LogGroupTags = {
         dest: response.tags['autolog:dest'],
@@ -116,4 +126,33 @@ export async function deleteSubscriptionFilter(
   });
   const response = await client.send(command);
   log.trace().unknown('response', response).msg('Deleted subscription filter');
+}
+
+export async function untagResource(
+  arn: string,
+  tagKeys: string[],
+): Promise<void> {
+  try {
+    const response = await client.send(
+      new UntagResourceCommand({
+        resourceArn: arn,
+        tagKeys,
+      }),
+    );
+
+    log
+      .trace()
+      .str('arn', arn)
+      .obj('removedTagKeys', tagKeys)
+      .unknown('response', response)
+      .msg('Successfully untagged resource');
+  } catch (error) {
+    log
+      .error()
+      .str('arn', arn)
+      .obj('tagKeys', tagKeys)
+      .err(error as Error)
+      .msg('Failed to untag resource');
+    throw error;
+  }
 }
