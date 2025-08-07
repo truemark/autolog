@@ -47,6 +47,7 @@ export class MainFunction extends ExtendedNodejsFunction {
       new PolicyStatement({
         actions: [
           'logs:ListTagsForResource',
+          'logs:UntagResource',
           'logs:PutSubscriptionFilter',
           'logs:DeleteSubscriptionFilter',
           'logs:DescribeSubscriptionFilters',

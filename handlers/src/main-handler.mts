@@ -6,6 +6,7 @@ import {
   getSubscriptionFilter,
   LogGroupTags,
   parseLogGroupName,
+  untagResource,
 } from './cloudwatch-helper.mjs';
 import {
   createDeliveryStream,
@@ -72,6 +73,7 @@ interface HandleUpdateTagEventProps {
   deliveryStreamRoleArn: string;
   deliveryStreamLogGroupName: string;
   subscriptionFilterStreamRoleArn: string;
+  resourceArn: string;
 }
 
 async function handleUpdateTagEvent(props: HandleUpdateTagEventProps) {
@@ -80,12 +82,11 @@ async function handleUpdateTagEvent(props: HandleUpdateTagEventProps) {
 
   if (isDisabled?.toLowerCase() === 'true') {
     await handleDeleteTagEvent(props.logGroupName);
+    await untagResource(props.resourceArn, ['autolog:dest']);
     log
       .info()
-      .str('logGroup', props.logGroupName)
-      .msg(
-        "Skipping/Deleting subscription filter setup: 'autolog:disabled' is set to true",
-      );
+      .str('arn', props.resourceArn)
+      .msg('Disabled tag set — removed autolog:dest tag to trigger deletion');
     return;
   }
 
@@ -151,6 +152,7 @@ export async function handler(event: unknown): Promise<void> {
             deliveryStreamRoleArn,
             deliveryStreamLogGroupName,
             subscriptionFilterStreamRoleArn,
+            resourceArn: resource,
           });
         }
       } catch (e) {
